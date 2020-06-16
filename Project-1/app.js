@@ -9,9 +9,12 @@ let w = 10;
 let h = 10;
 let arr = [];
 
+let mouse;
+let walker;
+
 function Line() {
   this.x = Math.round(random(width));
-  this.rand = Math.round(random(100));
+  this.rand = Math.round(random(-500));
   this.y1 = this.rand;
   this.y2 = 25 + this.rand;
 
@@ -47,8 +50,10 @@ function Line() {
 
 function setup() {
   createCanvas(1280, 720);
+  mouse = createVector(0, 0);
+  walker = new Walker(200, 200);
   //frameRate(25);
-  for (let i = 0; i < 25; i++) {
+  for (let i = 0; i < 40; i++) {
     arr[i] = new Line();
   }
 }
@@ -59,6 +64,9 @@ function draw() {
   drawAllLines();
   checkBoundaries();
   checkKeyInput();
+
+  walker.update(mouse.x, mouse.y);
+  walker.show();
 
   fill(0);
   rect(x, y, w, h);
@@ -106,4 +114,30 @@ function checkKeyInput() {
   } else if (keyIsDown(RIGHT_ARROW)) {
     x += 5;
   }
+}
+
+class Walker{
+  constructor(x, y){
+    this.pos = createVector(x, y);
+    this.vel = p5.Vector.random2D();
+  }
+  update(mX, mY){
+    let mouse = createVector(mX, mY);
+    this.acc = p5.Vector.sub(mouse, this.pos);
+    //this.acc.setMag(10);
+    this.vel.add(this.acc);
+    this.vel.limit(5);
+    this.pos.add(this.vel);
+  }
+
+  show(){
+    stroke(255);
+    strokeWeight(2);
+    fill(255, 100);
+    ellipse(this.pos.x, this.pos.y, 32);
+  }
+}
+
+function mousePressed(evt){
+    mouse = createVector(evt.x, evt.y);
 }
